@@ -14,7 +14,9 @@ fn main() {
     ];
 
     for url in [white_url, not_white_url].concat() {
-        ping(url.to_string());
+        for i in 0..3 {
+            ping(url.to_string());
+        }
         
     }
 
