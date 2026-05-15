@@ -8,6 +8,12 @@ use std::{
     vec,
 };
 
+enum Res {
+    NoInternerConnection,
+    WhiteListEnabled,
+    FullInternetAvailable,
+}
+
 fn main() {
     let white_url = vec!["yandex.com:443", "vk.com:443"];
     let not_white_url = vec!["google.com:443", "github.com:443"];
@@ -44,12 +50,6 @@ fn main() {
     let mut s = "".to_string();
     println!("Нажмите Enter для выхода...");
     stdin.read_line(&mut s);
-}
-
-enum Res {
-    NoInternerConnection,
-    WhiteListEnabled,
-    FullInternetAvailable,
 }
 
 fn ping(url: String, iteration: i32, repeats: i32) -> bool {
