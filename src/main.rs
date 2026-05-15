@@ -1,17 +1,19 @@
-use std::{
-    collections::{self, HashMap},
-    error::Error,
-    io::{Read, stdin},
-    net::ToSocketAddrs,
-    string,
-    time::Duration,
-    vec,
-};
+use std::{fmt::write, io::stdin, net::ToSocketAddrs, path::Display, time::Duration, vec};
 
 enum Res {
     NoInternerConnection,
     WhiteListEnabled,
     FullInternetAvailable,
+}
+
+impl std::fmt::Display for Res {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Res::NoInternerConnection => write!(f, "Нет интернет соединения"),
+            Res::WhiteListEnabled => write!(f, "Белые списки включены"),
+            Res::FullInternetAvailable => write!(f, "Интернет не ограничен"),
+        }
+    }
 }
 
 fn main() {
@@ -40,16 +42,12 @@ fn main() {
     let stdin = stdin();
 
     println!("\n===============Результат===============");
-    match result {
-        Res::NoInternerConnection => println!("Нет интернет соединения"),
-        Res::WhiteListEnabled => println!("Белые списки включены"),
-        Res::FullInternetAvailable => println!("Интернет не ограничен"),
-    }
+    println!("{result}");
     println!("=======================================");
 
     let mut s = "".to_string();
     println!("Нажмите Enter для выхода...");
-    stdin.read_line(&mut s);
+    stdin.read_line(&mut s).expect("Ошибка чтения из stdin");
 }
 
 fn ping(url: String, iteration: i32, repeats: i32) -> bool {
