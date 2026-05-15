@@ -1,6 +1,7 @@
+use ping;
 use std::{net::ToSocketAddrs, time::Duration};
 
-pub fn ping(url: String, iteration: i32, repeats: i32) -> bool {
+pub fn check(url: String, iteration: i32, repeats: i32) -> bool {
     let addres = match url.to_socket_addrs() {
         Ok(mut ok) => ok.next().unwrap().ip(),
         Err(err) => {
