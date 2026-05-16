@@ -64,6 +64,8 @@ fn check_urls(urls: Vec<String>, tries: u32) -> bool {
 }
 
 fn main() {
+    println!("Whitelist Checker v{}", env!("CARGO_PKG_VERSION"));
+
     let args = Args::parse();
     let mut result: Res = Res::NoInternerConnection;
 
