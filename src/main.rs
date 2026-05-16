@@ -38,10 +38,6 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-
-    // let white_url = vec!["yandex.com:443", "vk.com:443"];
-    // let not_white_url = vec!["google.com:443", "github.com:443"];
-
     let mut result: Res = Res::NoInternerConnection;
 
     println!("Проверяем сервера из белого списка:");
@@ -66,7 +62,7 @@ fn main() {
         }
     }
 
-    println!("\n===============Результат===============");
+    println!("===============Результат===============");
     println!("{result}");
     println!("=======================================");
 
@@ -74,7 +70,7 @@ fn main() {
     {
         use std::io::stdin;
 
-        let mut stdin = stdin();
+        let stdin = stdin();
         let mut s = "".to_string();
 
         println!("Нажмите Enter для выхода...");

@@ -6,10 +6,8 @@ pub fn check(url: String, iteration: i32, repeats: i32) -> bool {
         Ok(mut ok) => ok.next().unwrap().ip(),
         Err(err) => {
             eprintln!(
-                "[{}/{}] Неудачный пинг {} \nОшибка {}",
+                "[{}/{repeats}] Неудачный пинг {url} \nОшибка {}",
                 iteration + 1,
-                repeats,
-                url,
                 err.to_string()
             );
             return false;
@@ -23,21 +21,16 @@ pub fn check(url: String, iteration: i32, repeats: i32) -> bool {
     {
         Ok(ok) => {
             println!(
-                "[{}/{}] Пинг {} отклик={}мс",
+                "[{}/{repeats}] Пинг {url} отклик={}мс",
                 iteration + 1,
-                repeats,
-                url,
                 ok.rtt.as_millis().to_string()
             );
             return true;
         }
         Err(e) => {
             eprintln!(
-                "[{}/{}] Неудачный пинг {} \nОшибка {}",
+                "[{}/{repeats}] Неудачный пинг {url} \nОшибка {e}",
                 iteration + 1,
-                repeats,
-                url,
-                e
             );
             return false;
         }
