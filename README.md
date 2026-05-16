@@ -4,7 +4,22 @@
 
 ## Использование
 1. Скачать исполняемый файл для вашей системы со страницы [релизов](https://github.com/MikhKuts/whitelist-checker/releases)
-2. Запустить либо двойным кликом, либо через консоль
+2. Запустить либо двойным кликом, либо через консоль:
+
+```shell
+whitelist-checker.exe [OPTIONS]
+
+Options:
+  -t, --tries <TRIES>
+          Количество попыток подключения к серверам [default: 3]
+  -w, --whitelisted <WHITELISTED>
+          Путь к файлу с серверами в белом списке [default: ./wl_servers.txt]
+  -n, --not-whitelisted <NOT_WHITELISTED>
+          Путь к файлу с серверами вне белого списка [default: ./nwl_servers.txt]
+  -h, --help
+          Print help
+  ```
+
 ## Сборка из исходников
 Для этого понадобятся 
 - Cargo
