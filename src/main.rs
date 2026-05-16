@@ -68,7 +68,10 @@ fn main() {
     println!("{result}");
     println!("=======================================");
 
-    let mut s = "".to_string();
-    println!("Нажмите Enter для выхода...");
-    stdin.read_line(&mut s).expect("Ошибка чтения из stdin");
+    #[cfg(target_os = "windows")]
+    {
+        let mut s = "".to_string();
+        println!("Нажмите Enter для выхода...");
+        stdin.read_line(&mut s).expect("Ошибка чтения из stdin");
+    }
 }
