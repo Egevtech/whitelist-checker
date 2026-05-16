@@ -1,17 +1,12 @@
 use ping;
-use std::{net::ToSocketAddrs, time::Duration};
+use std::{io::Error, net::ToSocketAddrs, time::Duration};
 
-pub fn check(url: String, iteration: i32, repeats: i32) -> bool {
+pub fn check(
+    url: String,
+) -> std::result::Result<std::result::Result<u128, ping::Error>, (String, Error)> {
     let address = match url.to_socket_addrs() {
         Ok(mut ok) => ok.next().unwrap().ip(),
-        Err(err) => {
-            eprintln!(
-                "[{}/{repeats}] Неудачный пинг {url} \nОшибка {}",
-                iteration + 1,
-                err.to_string()
-            );
-            return false;
-        }
+        Err(err) => return Err((String::from("Ошибка разрешения имени"), err)),
     };
 
     match ping::new(address)
@@ -20,19 +15,10 @@ pub fn check(url: String, iteration: i32, repeats: i32) -> bool {
         .send()
     {
         Ok(ok) => {
-            println!(
-                "[{}/{repeats}] Пинг {url} отклик={}мс",
-                iteration + 1,
-                ok.rtt.as_millis().to_string()
-            );
-            return true;
+            return Ok(Ok(ok.rtt.as_millis()));
         }
         Err(e) => {
-            eprintln!(
-                "[{}/{repeats}] Неудачный пинг {url} \nОшибка {e}",
-                iteration + 1,
-            );
-            return false;
+            return Ok(Err(e));
         }
     };
 }

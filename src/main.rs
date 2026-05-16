@@ -25,7 +25,7 @@ impl std::fmt::Display for Res {
 struct Args {
     /// Количество попыток подключения к серверам
     #[arg(long, short, default_value = "3")]
-    tries: i32,
+    tries: u32,
 
     /// Путь к файлу с серверами в белом списке
     #[arg(long, short, default_value = "./wl_servers.txt")]
@@ -36,30 +36,46 @@ struct Args {
     not_whitelisted: String,
 }
 
+fn check_urls(urls: Vec<String>, tries: u32) -> bool {
+    for url in urls {
+        for i in 0..tries {
+            print!("Попытка {}/{} пинга {url}...", i + 1, tries);
+            match check(url.clone()) {
+                Ok(k) => match k {
+                    Ok(rtt) => {
+                        println!(" успех, отклик={rtt}мс");
+                    }
+                    Err(e) => {
+                        println!();
+                        eprintln!("Ошибка: {e}");
+                        return false;
+                    }
+                },
+                Err((msg, err)) => {
+                    println!();
+                    eprintln!("{msg}: {err}");
+                    return false;
+                }
+            }
+        }
+    }
+    true
+}
+
 fn main() {
     let args = Args::parse();
     let mut result: Res = Res::NoInternerConnection;
 
     println!("Проверяем сервера из белого списка:");
 
-    for url in parse_txt(args.whitelisted) {
-        for i in 0..args.tries {
-            if check(url.to_string(), i, args.tries) {
-                result = Res::WhiteListEnabled;
-            } else {
-                result = Res::NoInternerConnection;
-            };
-        }
+    if check_urls(parse_txt(args.whitelisted), args.tries) {
+        result = Res::WhiteListEnabled;
     }
 
     println!("Проверяем сервера вне белого списка:");
 
-    for url in parse_txt(args.not_whitelisted) {
-        for i in 0..args.tries {
-            if check(url.to_string(), i, args.tries) {
-                result = Res::FullInternetAvailable;
-            }
-        }
+    if check_urls(parse_txt(args.not_whitelisted), args.tries) {
+        result = Res::FullInternetAvailable;
     }
 
     println!("===============Результат===============");
