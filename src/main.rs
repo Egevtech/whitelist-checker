@@ -37,6 +37,7 @@ struct Args {
 }
 
 fn check_urls(urls: Vec<String>, tries: u32) -> bool {
+    let mut result: bool = true;
     for url in urls {
         for i in 0..tries {
             print!("Попытка {}/{} пинга {url}...", i + 1, tries);
@@ -44,22 +45,22 @@ fn check_urls(urls: Vec<String>, tries: u32) -> bool {
                 Ok(k) => match k {
                     Ok(rtt) => {
                         println!(" успех, отклик={rtt}мс");
+                        break;
                     }
                     Err(e) => {
                         println!();
                         eprintln!("Ошибка: {e}");
-                        return false;
                     }
                 },
                 Err((msg, err)) => {
                     println!();
                     eprintln!("{msg}: {err}");
-                    return false;
                 }
             }
+            result = false;
         }
     }
-    true
+    result
 }
 
 fn main() {
