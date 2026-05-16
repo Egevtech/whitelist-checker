@@ -3,7 +3,7 @@ mod parser;
 
 use check::check;
 use clap::Parser;
-use std::io::stdin;
+use parser::parse_txt;
 
 enum Res {
     NoInternerConnection,
@@ -39,12 +39,14 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let white_url = vec!["yandex.com:443", "vk.com:443"];
-    let not_white_url = vec!["google.com:443", "github.com:443"];
+    // let white_url = vec!["yandex.com:443", "vk.com:443"];
+    // let not_white_url = vec!["google.com:443", "github.com:443"];
 
     let mut result: Res = Res::NoInternerConnection;
 
-    for url in white_url {
+    println!("Проверяем сервера из белого списка:");
+
+    for url in parse_txt(args.whitelisted) {
         for i in 0..args.tries {
             if check(url.to_string(), i, args.tries) {
                 result = Res::WhiteListEnabled;
@@ -54,7 +56,9 @@ fn main() {
         }
     }
 
-    for url in not_white_url {
+    println!("Проверяем сервера вне белого списка:");
+
+    for url in parse_txt(args.not_whitelisted) {
         for i in 0..args.tries {
             if check(url.to_string(), i, args.tries) {
                 result = Res::FullInternetAvailable;
@@ -68,7 +72,9 @@ fn main() {
 
     #[cfg(target_os = "windows")]
     {
-        let mut stdin = Stdin;
+        use std::io::stdin;
+
+        let mut stdin = stdin();
         let mut s = "".to_string();
 
         println!("Нажмите Enter для выхода...");
