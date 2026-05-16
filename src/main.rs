@@ -1,83 +1,80 @@
-use std::{collections::{self, HashMap}, error::Error, io::{Read, stdin}, net::ToSocketAddrs, string, time::Duration, vec};
+mod check;
+mod parser;
 
+use check::check;
+use clap::Parser;
+use parser::parse_txt;
+
+enum Res {
+    NoInternerConnection,
+    WhiteListEnabled,
+    FullInternetAvailable,
+}
+
+impl std::fmt::Display for Res {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Res::NoInternerConnection => write!(f, "Нет интернет соединения"),
+            Res::WhiteListEnabled => write!(f, "Белые списки включены"),
+            Res::FullInternetAvailable => write!(f, "Интернет не ограничен"),
+        }
+    }
+}
+
+#[derive(Parser)]
+struct Args {
+    /// Количество попыток подключения к серверам
+    #[arg(long, short, default_value = "3")]
+    tries: i32,
+
+    /// Путь к файлу с серверами в белом списке
+    #[arg(long, short, default_value = "./wl_servers.txt")]
+    whitelisted: String,
+
+    /// Путь к файлу с серверами вне белого списка
+    #[arg(long, short, default_value = "./nwl_servers.txt")]
+    not_whitelisted: String,
+}
 
 fn main() {
-    let white_url = vec![
-        "yandex.com:443",
-        "vk.com:443",
-    ];
-    let not_white_url = vec![
-        "google.com:443",
-        "github.com:443"
-    ];
+    let args = Args::parse();
     let mut result: Res = Res::NoInternerConnection;
-    
-    let repeats = 3;
-    for url in white_url {
-        for i in 0..repeats {
-            if ping(url.to_string(), i, repeats) {
+
+    println!("Проверяем сервера из белого списка:");
+
+    for url in parse_txt(args.whitelisted) {
+        for i in 0..args.tries {
+            if check(url.to_string(), i, args.tries) {
                 result = Res::WhiteListEnabled;
-            }
-            else{
+            } else {
                 result = Res::NoInternerConnection;
             };
         }
     }
-    for url in not_white_url {
-        for i in 0..repeats {
-            if ping(url.to_string(), i, repeats){
+
+    println!("Проверяем сервера вне белого списка:");
+
+    for url in parse_txt(args.not_whitelisted) {
+        for i in 0..args.tries {
+            if check(url.to_string(), i, args.tries) {
                 result = Res::FullInternetAvailable;
             }
         }
     }
 
-    let stdin = stdin();
-    
-    println!("\n===============Результат===============");
-    match result {
-        Res::NoInternerConnection => println!("Нет интернет соединения"),
-        Res::WhiteListEnabled => println!("Белые списки включены"),
-        Res::FullInternetAvailable => println!("Интернет не ограничен"),
-    }
+    println!("===============Результат===============");
+    println!("{result}");
     println!("=======================================");
 
-    let mut s = "".to_string();
-    println!("Нажмите Enter для выхода...");
-    stdin.read_line(&mut s);
-
-}
-
-enum Res {
-    NoInternerConnection,
-    WhiteListEnabled,
-    FullInternetAvailable
-}
-
-fn ping(url: String, iteration: i32, repeats: i32) -> bool{
-
-    let addres = match url.to_socket_addrs() {
-        Ok(mut ok) => ok.next().unwrap().ip(),
-        Err(err) => {
-            eprintln!("[{}/{}] Неудачный пинг {} \nОшибка {}", iteration+1, repeats, url, err.to_string());
-            return false;
-        }
-    };
-
-    match ping::new(addres)
-        .timeout(Duration::from_secs(2))
-        .ttl(128)
-        .send()
+    #[cfg(target_os = "windows")]
     {
-        Ok(ok) => {
-            println!("[{}/{}] Пинг {} отклик={}мс", iteration+1, repeats, url, ok.rtt.as_millis().to_string());
-            return true;
-        }
-        Err(e) => { 
-            eprintln!("[{}/{}] Неудачный пинг {} \nОшибка {}", iteration+1, repeats, url, e);
-            return false;
-        }
-    };
-    
+        use std::io::stdin;
+
+        let stdin = stdin();
+        let mut s = "".to_string();
+
+        println!("Нажмите Enter для выхода...");
+
+        stdin.read_line(&mut s).expect("Ошибка чтения из stdin");
+    }
 }
-
-

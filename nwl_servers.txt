@@ -1,0 +1,3 @@
+google.com:443
+github.com:443
+итд.com:443
