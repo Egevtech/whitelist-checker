@@ -1,3 +1,2 @@
 yandex.ru:443
 vk.com:443
-ozon.ru:443
