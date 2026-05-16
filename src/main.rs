@@ -62,16 +62,17 @@ fn main() {
         }
     }
 
-    let stdin = stdin();
-
     println!("\n===============Результат===============");
     println!("{result}");
     println!("=======================================");
 
     #[cfg(target_os = "windows")]
     {
+        let mut stdin = Stdin;
         let mut s = "".to_string();
+
         println!("Нажмите Enter для выхода...");
+
         stdin.read_line(&mut s).expect("Ошибка чтения из stdin");
     }
 }
