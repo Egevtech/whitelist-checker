@@ -3,5 +3,6 @@ pub fn parse_txt(path: String) -> Vec<String> {
         .expect("Failed to open txt file")
         .split_whitespace()
         .map(String::from)
+        .map(|s| s + ":443")
         .collect::<Vec<String>>()
 }

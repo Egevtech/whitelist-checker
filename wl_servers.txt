@@ -1,2 +1,2 @@
-yandex.ru:443
-vk.com:443
+yandex.ru
+vk.com

@@ -1,2 +1,2 @@
-google.com:443
-github.com:443
+google.com
+github.com
