@@ -23,6 +23,11 @@ impl std::fmt::Display for Res {
 
 #[derive(Parser)]
 struct Args {
+
+    /// Завершать проверку домена при успешном пинге
+    #[arg(short, long)]
+    successful_skip: bool,
+
     /// Количество попыток подключения к серверам
     #[arg(long, short, default_value = "3")]
     tries: i32,
@@ -46,6 +51,10 @@ fn main() {
         for i in 0..args.tries {
             if check(url.to_string(), i, args.tries) {
                 result = Res::WhiteListEnabled;
+                if args.successful_skip {
+                    println!("Успех, переходим к следующему");
+                    break;
+                }
             } else {
                 result = Res::NoInternerConnection;
             };
@@ -58,6 +67,10 @@ fn main() {
         for i in 0..args.tries {
             if check(url.to_string(), i, args.tries) {
                 result = Res::FullInternetAvailable;
+                if args.successful_skip {
+                    println!("Успех, переходим к следующему");
+                    break;
+                }
             }
         }
     }
