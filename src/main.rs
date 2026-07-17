@@ -26,6 +26,10 @@ impl std::fmt::Display for Res {
 
 #[derive(Parser)]
 struct Args {
+    /// Завершать проверку домена при успешном пинге
+    #[arg(short, long)]
+    successful_skip: bool,
+
     /// Количество попыток подключения к серверам
     #[arg(long, short)]
     tries: Option<u32>,
