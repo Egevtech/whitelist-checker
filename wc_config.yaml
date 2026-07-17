@@ -1,0 +1,10 @@
+whitelisted:
+  - yandex.ru
+  - vk.ru
+
+not_whitelisted:
+  - github.com 
+  - google.com
+
+tries: 10
+
